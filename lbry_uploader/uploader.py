@@ -2,7 +2,7 @@ import pandas as pd
 import logging
 from tinydb import TinyDB, Query
 from pybry import LbryApi
-from .importer import Importer
+from importer import Importer
 import configparser as cp
 import json
 from datetime import datetime

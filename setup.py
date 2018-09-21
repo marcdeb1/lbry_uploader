@@ -1,6 +1,6 @@
 from setuptools import setup
 
-setup(name='lbry_ploader',
+setup(name='lbry_uploader',
       version='0.1',
       description='A simple uploader tool for LBRY',
       url='https://github.com/marcdeb1/lbry-uploader',
