@@ -1,0 +1,5 @@
+name,bid,file_path,title,description,author,language,license,license_url,thumbnail,nsfw,channel_name
+marcdeb-1,,C:\Users\Henry\Pictures\LBRY\pic1.jpg,marcdeb testsync 1,The first testsync!,marcdeb synctool v0.0.1,en,The MIT License,https://opensource.org/licenses/MIT,https://i.imgur.com/aVRj0fh.png,FALSE,
+marcdeb-2,,C:\Users\Henry\Pictures\LBRY\pic2.jpg,marcdeb testsync 2,The second testsync!,marcdeb synctool v0.0.1,en,The MIT License,https://opensource.org/licenses/MIT,https://i.imgur.com/aVRj0fh.png,FALSE,
+marcdeb-3,,C:\Users\Henry\Pictures\LBRY\pic3.jpg,marcdeb testsync 3,The third testsync!,marcdeb synctool v0.0.1,en,The MIT License,https://opensource.org/licenses/MIT,https://i.imgur.com/aVRj0fh.png,FALSE,
+marcdeb-4,,C:\Users\Henry\Pictures\LBRY\pic4.jpg,marcdeb testsync 4,The forth testsync!,marcdeb synctool v0.0.1,en,The MIT License,https://opensource.org/licenses/MIT,https://i.imgur.com/aVRj0fh.png,FALSE,
