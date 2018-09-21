@@ -6,6 +6,7 @@ from .importer import Importer
 import configparser as cp
 import json
 from datetime import datetime
+import time
 import hashlib
 
 REQUIRED_FIELDS = ['name', 'bid', 'title', 'description', 'author', 'language', 'license', 'nsfw']
@@ -14,18 +15,17 @@ PUBLISH_FIELDS = ['name', 'file_path', 'bid', 'title', 'description', 'author', 
 
 class Uploader:
 	def __init__(self, settings_name="default"):
-		self.logger = logging.getLogger(__name__)
-		self.logger.setLevel(logging.INFO)
-		handler = logging.StreamHandler()
-		formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
-		handler.setFormatter(formatter)
-		self.logger.addHandler(handler)
+		self.logger = self.getLogger()
 		self.importer = Importer()
 		# Settings
 		self.config = cp.ConfigParser()
 		settings_file = 'config/' + settings_name + '.ini'
 		self.config.read(settings_file)
-		self.settings = self.config['MainConfig']
+		if 'MainConfig' in self.config:
+			self.settings = self.config['MainConfig']
+			self.logger.info("Using '" + settings_name + "' settings.")
+		else:
+			self.logger.error("Could not find settings file or MainConfig section.")
 		# LBRY API
 		self.lbry = LbryApi()
 		# Database
@@ -43,7 +43,7 @@ class Uploader:
 		if status:
 			self.logger.info("LBRY Daemon ready for upload.")
 		else:
-			self.logger.error("Could not reach LBRY daemon. Please check that it is running.")
+			self.logger.error("Could not reach LBRY daemon. Please check if it is running.")
 			self.logger.info("Exiting uploader...")
 			return False
 
@@ -54,7 +54,7 @@ class Uploader:
 			if claim == False:
 				self.logger.info("Skipping claim. [" + str(i + 1) + "/" + str(number_claims) + "]")
 				continue
-
+				
 			# Checking if claim was already published
 			is_published = self.claim_is_published(claim)
 			if is_published:
@@ -62,9 +62,9 @@ class Uploader:
 				continue
 
 			# Publishing
-			p = self.publish(claim)[0]
-			if 'error' in p:
-				self.logger.warning("Claim '" + claim.get('title') + "' could not be published. Error: " + p.get('error') + "[" + str(i + 1) + "/" + str(number_claims) + "]")
+			r = self.publish(claim)
+			if not r:
+				self.logger.error("Claim '" + claim.get('title') + "' could not be published." + "[" + str(i + 1) + "/" + str(number_claims) + "]")
 				continue
 			else:
 				s = self.save_claim(claim, p)
@@ -99,9 +99,10 @@ class Uploader:
 		publish_data['fee'] = fee_data
 		try:
 			publish_result = self.lbry.call('publish', publish_data)
-			return publish_result
+			return publish_result[0]
 		except Exception as e:
-			self.logger.error('Error when publishing : ' + str(e) + str(e.response))
+			self.logger.error('Error when publishing : ' + str(e))
+			return False
 		
 	def claim_is_published(self, claim):
 		m = hashlib.md5()
@@ -122,8 +123,25 @@ class Uploader:
 		return self.db.insert(save_data)
 		
 	def check_lbry_status(self):
-		response = self.lbry.call("status")
-		# Rencoyer exception
-		if response[0].get('is_running'):
-			return True
+		try:
+			response = self.lbry.call("status")
+			if response[0].get('is_running'):
+				return True
+		except Exception as e:
+			self.logger.error('Status Error : ' + str(e))
 		return False
+	
+	def getLogger(self):
+		logger = logging.getLogger(__name__)
+		log_name = time.strftime("%Y%m%d-%H%M%S")
+		formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
+		
+		consoleHandler = logging.StreamHandler()
+		consoleHandler.setFormatter(formatter)
+		logger.addHandler(consoleHandler)
+		
+		fileHandler = logging.FileHandler("{0}/{1}.log".format("log", log_name))
+		fileHandler.setFormatter(formatter)
+		logger.addHandler(fileHandler)
+		
+		return logger
