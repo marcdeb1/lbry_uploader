@@ -1,2 +1,2 @@
-# lbry-uploader
-An uploading tool for LBRY written in Python
+# LBRY Uploader
+An uploading tool for LBRY written in Python.
