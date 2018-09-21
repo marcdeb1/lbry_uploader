@@ -1,4 +1,3 @@
-# MAIN
 from lib.uploader import Uploader
 
 uploader = Uploader()

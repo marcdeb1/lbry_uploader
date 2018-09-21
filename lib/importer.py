@@ -15,3 +15,6 @@ class Importer:
 		
 	def extract_xls(self, file_name):
 		pass
+		
+	def extract_json(self, file_name):
+		pass
