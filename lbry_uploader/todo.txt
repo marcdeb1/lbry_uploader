@@ -1,0 +1,8 @@
+# TODO
+- Vérifier paramètres par défaut OK
+- chemin fichier avec espace  OK -> affichage message LBRY API
+- paramètre nsfw OK
+- publishing without channel OK
+- Check fee OK
+- titre et nom à partir du nom de fichier
+- Test JSON import

@@ -62,15 +62,17 @@ class Uploader:
 				continue
 
 			# Publishing
-			r = self.publish(claim)
-			if not r:
-				self.logger.error("Claim '" + claim.get('title') + "' could not be published." + "[" + str(i + 1) + "/" + str(number_claims) + "]")
+			p = self.publish(claim)
+			if not p:
+				self.logger.error("Claim '" + claim.get('title') + "' could not be published. [" + str(i + 1) + "/" + str(number_claims) + "]")
 				continue
 			else:
 				s = self.save_claim(claim, p)
 				number_published += 1
-				self.logger.info("Claim '" + claim.get('title') + "' was successfully published. [" + str(i + 1) + "/" + str(number_claims) + "]")
-
+				if claim.get('channel_name') and claim.get('channel_name') != "":
+					self.logger.info("Claim '" + claim.get('title') + "' was successfully published to channel " + claim.get('channel_name') + ". [" + str(i + 1) + "/" + str(number_claims) + "]")
+				else:
+					self.logger.info("Claim '" + claim.get('title') + "' was successfully published. [" + str(i + 1) + "/" + str(number_claims) + "]")
 		self.logger.info(str(number_published) + "/" + str(number_claims) + " claims published.")
 		self.logger.info("Exiting uploader...")
 		return True
@@ -89,19 +91,29 @@ class Uploader:
 				if f in self.settings and self.settings.get(f) != "null" and self.settings.get(f) != "":
 					claim[f] = self.settings[f]
 					self.logger.info("Optional field '" + f + "' not found, using default value.")
+		if 'nsfw' in claim:
+			if claim.get('nsfw').lower() == 'false':
+				claim['nsfw'] = False
+			elif claim.get('nsfw').lower() == 'true':
+				claim['nsfw'] = True
+			else:
+				self.logger.error("Could not parse required field 'nsfw'.")
+				return False				
 		return claim
 
 	def publish(self, claim):
 		publish_data = {}
 		for f in PUBLISH_FIELDS:
 			publish_data[f] = claim.get(f)
-		fee_data = {'currency': claim.get('fee_currency'), 'amount': claim.get('fee_amount'), 'address': claim.get('fee_address') }
+		fee_data = {'currency': claim.get('fee_currency'), 'amount': claim.get('fee_amount')}
+		if claim.get('fee_address'):
+			fee_data['address'] = claim.get('fee_address')
 		publish_data['fee'] = fee_data
 		try:
 			publish_result = self.lbry.call('publish', publish_data)
 			return publish_result[0]
 		except Exception as e:
-			self.logger.error('Error when publishing : ' + str(e))
+			self.logger.error('Error when publishing : ' + str(e.response.get('error').get('message')))
 			return False
 		
 	def claim_is_published(self, claim):
@@ -133,6 +145,7 @@ class Uploader:
 	
 	def getLogger(self):
 		logger = logging.getLogger(__name__)
+		logger.setLevel(logging.INFO)
 		log_name = time.strftime("%Y%m%d-%H%M%S")
 		formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
 		
@@ -143,5 +156,4 @@ class Uploader:
 		fileHandler = logging.FileHandler("{0}/{1}.log".format("log", log_name))
 		fileHandler.setFormatter(formatter)
 		logger.addHandler(fileHandler)
-		
 		return logger
