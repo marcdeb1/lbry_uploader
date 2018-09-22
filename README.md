@@ -10,8 +10,11 @@ An uploading tool for LBRY written in Python. For more information on the LBRY p
 ## How to use
 
 The uploader takes a file as an input (CSV or JSON) and uploads claims described in the file to LBRY. The most simple way to use it is by running : 
+
 `python upload.py --input=input.csv --config=myconfig`
+
 or
+
 ```
 from lbry_uploader import Uploader
 uploader = Uploader(config_name="myconfig") # config_name is optional
