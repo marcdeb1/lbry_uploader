@@ -40,7 +40,9 @@ Optional fields : fee_amount, fee_currency, fee_address, channel_name, claim_add
 ## Default values
 
 Default values can be set in the configuration file. If values are not found or empty in the input file, the uploader will use the values from the configuration file. Edit default.ini to change the default values, or create a new 'ini' file and pass it as an argument to the uploader. The config file must be an 'ini' file. 
+
 If not provided, name and title of the claim will be built from the file name. If file name is 'My Sample Video.mp4', the name of the claim will be 'my-sample-video' and the title will be 'My Sample Video'.
+
 At the very least, the input file can contain only contain file_path, thumbnail and preview fields, with all the other fields coming from the configuration file.
 
 ## Stopping/Restarting the uploader
