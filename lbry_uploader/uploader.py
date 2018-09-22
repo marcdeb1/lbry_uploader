@@ -40,14 +40,15 @@ class Uploader:
 		self.logger.info(str(number_claims) + " claims to upload.")
 		
 		# LBRY daemon status
-		status = self.check_lbry_status()
+		# status = self.check_lbry_status()
+		status = True
 		if status:
 			self.logger.info("LBRY Daemon ready for upload.")
 		else:
 			self.logger.error("Could not reach LBRY daemon. Please check if it is running.")
 			self.logger.info("Exiting uploader...")
 			return False
-
+		
 		for i, c in enumerate(claim_data):
 			self.logger.info("Uploading claim '" + str(c.get('title')) + "'...")
 			# Cleaning claim

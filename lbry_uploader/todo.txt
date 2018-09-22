@@ -6,3 +6,5 @@
 - Check fee OK
 - titre et nom à partir du nom de fichier OK
 - Test JSON import
+- Unknown file
+- Command line

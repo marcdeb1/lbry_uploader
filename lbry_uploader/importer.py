@@ -1,4 +1,5 @@
 import os
+import json
 import pandas as pd
 
 class Importer:
@@ -7,7 +8,7 @@ class Importer:
 		df = pd.DataFrame()
 		if extension == '.csv':
 			df = self.extract_csv(file_name)
-		elif extension == 'json':
+		elif extension == '.json':
 			df = self.extract_json(file_name)
 		return df.to_dict('records')
 		
