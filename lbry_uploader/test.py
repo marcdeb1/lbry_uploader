@@ -1,4 +1,4 @@
 from lbry_uploader import Uploader
 
 uploader = Uploader()
-uploader.upload('sample.json')
+uploader.upload('sample.csv')

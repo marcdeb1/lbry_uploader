@@ -1,2 +1,4 @@
-file_path,description,thumbnail
-C:\Users\Henry\Videos\LBRY\Couple in the sun.mp4,Courtesy of https://videos.pexels.com,https://images.pexels.com/photos/728880/pexels-photo-728880.jpeg?auto=compress&cs=tinysrgb&h=650&w=940
+title,name,file_path,bid,fee_amount,fee_currency,description,thumbnail,preview
+Video number 1,video-1,C:\Videos\video1.mp4,1,0.1,LBC,Description,https://www.example.com/thumbnail,https://www.example.com/preview
+Video number 2,video-2,C:\Videos\video2.mp4,0.8,0.1,LBC,Description,https://www.example.com/thumbnail,https://www.example.com/preview
+Video number 3,video-3,C:\Videos\video3.mp4,0.8,0.1,LBC,Description,https://www.example.com/thumbnail,https://www.example.com/preview
