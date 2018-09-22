@@ -5,6 +5,6 @@
 - publishing without channel OK
 - Check fee OK
 - titre et nom à partir du nom de fichier OK
-- Test JSON import
-- Unknown file
+- Test JSON import OK
+- Unknown file OK
 - Command line

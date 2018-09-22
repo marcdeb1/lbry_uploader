@@ -40,8 +40,7 @@ class Uploader:
 		self.logger.info(str(number_claims) + " claims to upload.")
 		
 		# LBRY daemon status
-		# status = self.check_lbry_status()
-		status = True
+		status = self.check_lbry_status()
 		if status:
 			self.logger.info("LBRY Daemon ready for upload.")
 		else:
