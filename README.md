@@ -43,7 +43,7 @@ Default values can be set in the configuration file. If values are not found or 
 
 If not provided, name and title of the claim will be built from the file name. If file name is 'My Sample Video.mp4', the name of the claim will be 'my-sample-video' and the title will be 'My Sample Video'.
 
-At the very least, the input file can contain only contain file_path, thumbnail and preview fields, with all the other fields coming from the configuration file.
+At the very least, the input file can contain only contain the file_path field, with all the other fields coming from the configuration file, and no optional fields.
 
 ## Stopping/Restarting the uploader
 
