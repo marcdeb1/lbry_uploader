@@ -1,4 +1,3 @@
-import pandas as pd
 import logging
 from tinydb import TinyDB, Query
 from pybry import LbryApi
@@ -7,9 +6,11 @@ import configparser as cp
 import json
 from datetime import datetime
 import time
+import os
 import hashlib
+from slugify import slugify
 
-REQUIRED_FIELDS = ['name', 'bid', 'title', 'description', 'author', 'language', 'license', 'nsfw']
+REQUIRED_FIELDS = ['file_path', 'bid', 'description', 'author', 'language', 'license', 'nsfw']
 OPTIONAL_FIELDS = ['fee_amount', 'fee_currency', 'fee_address', 'channel_name', 'claim_address', 'preview']
 PUBLISH_FIELDS = ['name', 'file_path', 'bid', 'title', 'description', 'author', 'language', 'license', 'thumbnail', 'preview', 'nsfw', 'license_url', 'channel_name', 'channel_id', 'claim_address']
 
@@ -48,7 +49,7 @@ class Uploader:
 			return False
 
 		for i, c in enumerate(claim_data):
-			self.logger.info("Uploading claim '" + c.get('title') + "'...")
+			self.logger.info("Uploading claim '" + str(c.get('title')) + "'...")
 			# Cleaning claim
 			claim = self.clean_claim(c)
 			if claim == False:
@@ -58,21 +59,21 @@ class Uploader:
 			# Checking if claim was already published
 			is_published = self.claim_is_published(claim)
 			if is_published:
-				self.logger.info("Claim '" + claim.get('title') + "' already published. [" + str(i + 1) + "/" + str(number_claims) + "]")
+				self.logger.info("Claim '" + str(claim.get('title')) + "' already published. [" + str(i + 1) + "/" + str(number_claims) + "]")
 				continue
 
 			# Publishing
 			p = self.publish(claim)
 			if not p:
-				self.logger.error("Claim '" + claim.get('title') + "' could not be published. [" + str(i + 1) + "/" + str(number_claims) + "]")
+				self.logger.error("Claim '" + str(claim.get('title')) + "' could not be published. [" + str(i + 1) + "/" + str(number_claims) + "]")
 				continue
 			else:
 				s = self.save_claim(claim, p)
 				number_published += 1
 				if claim.get('channel_name') and claim.get('channel_name') != "":
-					self.logger.info("Claim '" + claim.get('title') + "' was successfully published to channel " + claim.get('channel_name') + ". [" + str(i + 1) + "/" + str(number_claims) + "]")
+					self.logger.info("Claim '" + str(claim.get('title')) + "' was successfully published to channel " + claim.get('channel_name') + ". [" + str(i + 1) + "/" + str(number_claims) + "]")
 				else:
-					self.logger.info("Claim '" + claim.get('title') + "' was successfully published. [" + str(i + 1) + "/" + str(number_claims) + "]")
+					self.logger.info("Claim '" + str(claim.get('title')) + "' was successfully published. [" + str(i + 1) + "/" + str(number_claims) + "]")
 		self.logger.info(str(number_published) + "/" + str(number_claims) + " claims published.")
 		self.logger.info("Exiting uploader...")
 		return True
@@ -84,13 +85,14 @@ class Uploader:
 					claim[f] = self.settings[f]
 					self.logger.warning("Required field '" + f + "' not found, using default value.")
 				else:
-					self.logger.error("Required field '" + f + "' not found and no default was provided.")
+					self.logger.error("Required field '" + f + "' not found and no default value was provided.")
 					return False
 		for f in OPTIONAL_FIELDS:
 			if claim.get(f) == None or claim.get(f) == "":
 				if f in self.settings and self.settings.get(f) != "null" and self.settings.get(f) != "":
 					claim[f] = self.settings[f]
 					self.logger.info("Optional field '" + f + "' not found, using default value.")
+		# Parsing NSFW
 		if 'nsfw' in claim:
 			if claim.get('nsfw').lower() == 'false':
 				claim['nsfw'] = False
@@ -98,7 +100,15 @@ class Uploader:
 				claim['nsfw'] = True
 			else:
 				self.logger.error("Could not parse required field 'nsfw'.")
-				return False				
+				return False
+		# Getting name and title
+		file_name = os.path.splitext(os.path.basename(claim.get('file_path')))[0]
+		if claim.get('name') == None or claim.get('name') == "":
+			self.logger.info("Name field not found or empty. Using file name as claim name.")
+			claim['name'] = self.build_claim_name(file_name)
+		if claim.get('title') == None or claim.get('title') == "":
+			self.logger.info("Title field not found or empty. Using file name as claim title.")
+			claim['title'] = file_name
 		return claim
 
 	def publish(self, claim):
@@ -142,7 +152,10 @@ class Uploader:
 		except Exception as e:
 			self.logger.error('Status Error : ' + str(e))
 		return False
-	
+		
+	def build_claim_name(self, file_name):
+		return slugify(file_name)
+		
 	def getLogger(self):
 		logger = logging.getLogger(__name__)
 		logger.setLevel(logging.INFO)

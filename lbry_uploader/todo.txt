@@ -4,5 +4,5 @@
 - paramètre nsfw OK
 - publishing without channel OK
 - Check fee OK
-- titre et nom à partir du nom de fichier
+- titre et nom à partir du nom de fichier OK
 - Test JSON import
