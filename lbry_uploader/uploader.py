@@ -11,20 +11,20 @@ import hashlib
 from slugify import slugify
 
 REQUIRED_FIELDS = ['file_path', 'bid', 'description', 'author', 'language', 'license', 'nsfw']
-OPTIONAL_FIELDS = ['fee_amount', 'fee_currency', 'fee_address', 'channel_name', 'claim_address', 'preview']
+OPTIONAL_FIELDS = ['fee_amount', 'fee_currency', 'fee_address', 'channel_name', 'claim_address', 'preview', 'thumbnail']
 PUBLISH_FIELDS = ['name', 'file_path', 'bid', 'title', 'description', 'author', 'language', 'license', 'thumbnail', 'preview', 'nsfw', 'license_url', 'channel_name', 'channel_id', 'claim_address']
 
 class Uploader:
-	def __init__(self, settings_name="default"):
+	def __init__(self, config_name="default"):
 		self.logger = self.getLogger()
 		self.importer = Importer()
 		# Settings
 		self.config = cp.ConfigParser()
-		settings_file = 'config/' + settings_name + '.ini'
+		settings_file = 'config/' + config_name + '.ini'
 		self.config.read(settings_file)
 		if 'MainConfig' in self.config:
 			self.settings = self.config['MainConfig']
-			self.logger.info("Using '" + settings_name + "' settings.")
+			self.logger.info("Using '" + config_name + "' settings.")
 		else:
 			self.logger.error("Could not find settings file or MainConfig section.")
 		# LBRY API
