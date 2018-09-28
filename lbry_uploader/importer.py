@@ -20,5 +20,8 @@ class Importer:
 		pass
 		
 	def extract_json(self, file_name):
-		df = pd.read_json(file_name)
+		f = open(file_name,'r')
+		d = f.read() 
+		y = json.loads(d) 
+		df = pd.DataFrame(y)
 		return df
