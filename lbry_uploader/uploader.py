@@ -58,7 +58,7 @@ class Uploader:
                 self.logger.info("Claim '" + str(claim.get('title')) + "' was successfully published to channel " + claim.get('channel_name') + ". [" + str(i + 1) + "/" + str(number_claims) + "]")
             else:
                 self.logger.info("Claim '" + str(claim.get('title')) + "' was successfully published. [" + str(i + 1) + "/" + str(number_claims) + "]")
-        return 
+        return True
                     
 	def upload(self, file_name):
 		self.logger.info("Starting uploader...")
