@@ -32,6 +32,34 @@ class Uploader:
 		# Database
 		self.db = TinyDB('db.json')
 		
+    def upload_claim(self, c):
+        self.logger.info("Uploading claim '" + str(c.get('title')) + "'...")
+        # Cleaning claim
+        claim = self.clean_claim(c)
+        if claim == False:
+            self.logger.info("Skipping claim. [" + str(i + 1) + "/" + str(number_claims) + "]")
+            return False
+            
+        # Checking if claim was already published
+        is_published = self.claim_is_published(claim)
+        if is_published:
+            self.logger.info("Claim '" + str(claim.get('title')) + "' already published. [" + str(i + 1) + "/" + str(number_claims) + "]")
+            return False
+
+        # Publishing
+        p = self.publish(claim)
+        if not p:
+            self.logger.error("Claim '" + str(claim.get('title')) + "' could not be published. [" + str(i + 1) + "/" + str(number_claims) + "]")
+            return False
+        else:
+            s = self.save_claim(claim, p)
+            number_published += 1
+            if claim.get('channel_name') and claim.get('channel_name') != "":
+                self.logger.info("Claim '" + str(claim.get('title')) + "' was successfully published to channel " + claim.get('channel_name') + ". [" + str(i + 1) + "/" + str(number_claims) + "]")
+            else:
+                self.logger.info("Claim '" + str(claim.get('title')) + "' was successfully published. [" + str(i + 1) + "/" + str(number_claims) + "]")
+        return 
+                    
 	def upload(self, file_name):
 		self.logger.info("Starting uploader...")
 		claim_data = self.importer.extract(file_name) # Importer returns an array of dicts
@@ -49,31 +77,10 @@ class Uploader:
 			return False
 		
 		for i, c in enumerate(claim_data):
-			self.logger.info("Uploading claim '" + str(c.get('title')) + "'...")
-			# Cleaning claim
-			claim = self.clean_claim(c)
-			if claim == False:
-				self.logger.info("Skipping claim. [" + str(i + 1) + "/" + str(number_claims) + "]")
-				continue
-				
-			# Checking if claim was already published
-			is_published = self.claim_is_published(claim)
-			if is_published:
-				self.logger.info("Claim '" + str(claim.get('title')) + "' already published. [" + str(i + 1) + "/" + str(number_claims) + "]")
-				continue
-
-			# Publishing
-			p = self.publish(claim)
-			if not p:
-				self.logger.error("Claim '" + str(claim.get('title')) + "' could not be published. [" + str(i + 1) + "/" + str(number_claims) + "]")
-				continue
-			else:
-				s = self.save_claim(claim, p)
-				number_published += 1
-				if claim.get('channel_name') and claim.get('channel_name') != "":
-					self.logger.info("Claim '" + str(claim.get('title')) + "' was successfully published to channel " + claim.get('channel_name') + ". [" + str(i + 1) + "/" + str(number_claims) + "]")
-				else:
-					self.logger.info("Claim '" + str(claim.get('title')) + "' was successfully published. [" + str(i + 1) + "/" + str(number_claims) + "]")
+			r = self.upload_claim(c)
+            if not r:
+                continue
+            
 		self.logger.info(str(number_published) + "/" + str(number_claims) + " claims published.")
 		self.logger.info("Exiting uploader...")
 		return True
