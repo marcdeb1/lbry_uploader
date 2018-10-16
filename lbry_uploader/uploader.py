@@ -32,34 +32,29 @@ class Uploader:
 		# Database
 		self.db = TinyDB('db.json')
 		
-    def upload_claim(self, c):
-        self.logger.info("Uploading claim '" + str(c.get('title')) + "'...")
-        # Cleaning claim
-        claim = self.clean_claim(c)
-        if claim == False:
-            self.logger.info("Skipping claim. [" + str(i + 1) + "/" + str(number_claims) + "]")
-            return False
-            
-        # Checking if claim was already published
-        is_published = self.claim_is_published(claim)
-        if is_published:
-            self.logger.info("Claim '" + str(claim.get('title')) + "' already published. [" + str(i + 1) + "/" + str(number_claims) + "]")
-            return False
+	def upload_claim(self, c):
+		self.logger.info("Uploading claim '" + str(c.get('title')) + "'...")
+		# Cleaning claim
+		claim = self.clean_claim(c)
+		if claim == False:
+			self.logger.info("Skipping claim.")
+			return False
 
-        # Publishing
-        p = self.publish(claim)
-        if not p:
-            self.logger.error("Claim '" + str(claim.get('title')) + "' could not be published. [" + str(i + 1) + "/" + str(number_claims) + "]")
-            return False
-        else:
-            s = self.save_claim(claim, p)
-            number_published += 1
-            if claim.get('channel_name') and claim.get('channel_name') != "":
-                self.logger.info("Claim '" + str(claim.get('title')) + "' was successfully published to channel " + claim.get('channel_name') + ". [" + str(i + 1) + "/" + str(number_claims) + "]")
-            else:
-                self.logger.info("Claim '" + str(claim.get('title')) + "' was successfully published. [" + str(i + 1) + "/" + str(number_claims) + "]")
-        return True
-                    
+		# Checking if claim was already published
+		is_published = self.claim_is_published(claim)
+		if is_published:
+			self.logger.info("Claim '" + str(claim.get('title')) + "' already published.")
+			return False
+
+		# Publishing
+		p = self.publish(claim)
+		if not p:
+			self.logger.error("Claim '" + str(claim.get('title')) + "' could not be published.")
+			return False
+		else:
+			s = self.save_claim(claim, p)
+		return True
+
 	def upload(self, file_name):
 		self.logger.info("Starting uploader...")
 		claim_data = self.importer.extract(file_name) # Importer returns an array of dicts
@@ -78,9 +73,14 @@ class Uploader:
 		
 		for i, c in enumerate(claim_data):
 			r = self.upload_claim(c)
-            if not r:
-                continue
-            
+			if not r:
+				continue
+			number_published += 1
+			if c.get('channel_name') and c.get('channel_name') != "":
+				self.logger.info("Claim '" + str(c.get('title')) + "' was successfully published to channel " + c.get('channel_name') + ".")
+			else:
+				self.logger.info("Claim '" + str(c.get('title')) + "' was successfully published.")
+			
 		self.logger.info(str(number_published) + "/" + str(number_claims) + " claims published.")
 		self.logger.info("Exiting uploader...")
 		return True
@@ -90,7 +90,7 @@ class Uploader:
 			if claim.get(f) == None or claim.get(f) == "":
 				if f in self.settings and self.settings.get(f) != "null" and self.settings.get(f) != "":
 					claim[f] = self.settings[f]
-					self.logger.warning("Required field '" + f + "' not found, using default value.")
+					# self.logger.info("Required field '" + f + "' not found, using default value.")
 				else:
 					self.logger.error("Required field '" + f + "' not found and no default value was provided.")
 					return False
@@ -98,7 +98,7 @@ class Uploader:
 			if claim.get(f) == None or claim.get(f) == "":
 				if f in self.settings and self.settings.get(f) != "null" and self.settings.get(f) != "":
 					claim[f] = self.settings[f]
-					self.logger.info("Optional field '" + f + "' not found, using default value.")
+					# self.logger.info("Optional field '" + f + "' not found, using default value.")
 		# Parsing NSFW
 		if 'nsfw' in claim:
 			if claim.get('nsfw').lower() == 'false':
