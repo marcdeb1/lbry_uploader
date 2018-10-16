@@ -21,6 +21,8 @@ uploader = Uploader(config_name="myconfig") # config_name is optional
 uploader.upload("input.json")
 ```
 
+The `upload_claim` function can also be used to upload one claim, and takes a dictionary as an argument.
+
 Note: The config argument is optional. Default settings (default.ini file) will be used if not provided.
 
 ## File input format
