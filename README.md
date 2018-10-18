@@ -3,9 +3,7 @@ An uploading tool for LBRY written in Python. For more information on the LBRY p
 
 ## Installation
 
-- If it is not published on pypi.org yet, install package pybry by following instructions at https://github.com/osilkin98/PyBRY.
-- Clone or download lbry_uploader repository : `git clone https://github.com/marcdeb1/lbry_uploader.git`.
-- Run `pip install .` in cloned folder.
+- `pip install lbry-uploader` or clone repository.
 
 ## How to use
 
