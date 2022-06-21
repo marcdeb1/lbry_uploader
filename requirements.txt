@@ -3,7 +3,7 @@ chardet==3.0.4
 Click==7.0
 idna==2.7
 lbry-uploader==0.3
-numpy==1.15.2
+numpy==1.22.0
 pandas==0.23.4
 pybry==1.6.4
 python-dateutil==2.7.3
